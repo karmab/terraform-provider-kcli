@@ -25,7 +25,7 @@ func (kcli *Kcli) CreateVm(vmprofile *pb.Vmprofile) *pb.Result {
 	defer cancel()
 	res, err := config.CreateVm(ctx, vmprofile)
 	if err != nil {
-		log.Fatalf("could not creaye vm: %v", err)
+		log.Fatalf("could not create vm: %v", err)
 	}
 	return res
 }
@@ -82,11 +82,13 @@ func resourceServer() *schema.Resource {
 }
 
 func createFunc(d *schema.ResourceData, meta interface{}) error {
-	// client := meta.(*Kcli)
-	client := Kcli{Url: "127.0.0.1:50051"}
+	client := meta.(*Kcli)
 	vmprofile := pb.Vmprofile{
-		Name:  d.Get("name").(string),
-		Image: d.Get("image").(string),
+		Name:         d.Get("name").(string),
+		Image:        d.Get("image").(string),
+		Overrides:    d.Get("overrides").(string),
+		Ignitionfile: d.Get("ignitionfile").(string),
+		Profile:      d.Get("profile").(string),
 	}
 
 	result := client.CreateVm(&vmprofile)
@@ -106,8 +108,7 @@ func updateFunc(d *schema.ResourceData, meta interface{}) error {
 }
 
 func deleteFunc(d *schema.ResourceData, meta interface{}) error {
-	// client := meta.(*Kcli)
-	client := Kcli{Url: "127.0.0.1:50051"}
+	client := meta.(*Kcli)
 	vm := pb.Vm{
 		Name: d.Get("name").(string),
 	}
@@ -118,4 +119,13 @@ func deleteFunc(d *schema.ResourceData, meta interface{}) error {
 	}
 	d.SetId("")
 	return nil
+}
+
+func providerConfigure(schema *schema.ResourceData) (interface{}, error) {
+	url := schema.Get("url").(string)
+	if url == "" {
+		url = "127.0.0.1:50051"
+	}
+	client := Kcli{Url: url}
+	return &client, nil
 }

@@ -6,7 +6,9 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 	pb "github.com/karmab/terraform-provider-kcli/kcli-proto"
 	"google.golang.org/grpc"
+	"io/ioutil"
 	"log"
+	"os"
 	"time"
 )
 
@@ -89,6 +91,11 @@ func createFunc(d *schema.ResourceData, meta interface{}) error {
 		Overrides:    d.Get("overrides").(string),
 		Ignitionfile: d.Get("ignitionfile").(string),
 		Profile:      d.Get("profile").(string),
+	}
+	ignitionfile := d.Get("name").(string) + ".ign"
+	if _, err := os.Stat(ignitionfile); err == nil {
+		b, _ := ioutil.ReadFile(ignitionfile)
+		vmprofile.Ignitionfile = string(b)
 	}
 
 	result := client.CreateVm(&vmprofile)

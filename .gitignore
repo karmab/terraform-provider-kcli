@@ -3,3 +3,5 @@ terraform.tfstate
 terraform-provider-kcli
 go.mod
 go.sum
+crash.log
+terraform.tfstate.backup

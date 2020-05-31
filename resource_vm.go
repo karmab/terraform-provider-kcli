@@ -12,10 +12,6 @@ import (
 	"time"
 )
 
-type Kcli struct {
-	Url string
-}
-
 func (kcli *Kcli) CreateVm(vmprofile *pb.Vmprofile) *pb.Result {
 	conn, err := grpc.Dial(kcli.Url, grpc.WithInsecure())
 	if err != nil {
@@ -48,12 +44,12 @@ func (kcli *Kcli) DeleteVm(vm *pb.Vm) *pb.Result {
 	return res
 }
 
-func resourceServer() *schema.Resource {
+func resourceVm() *schema.Resource {
 	return &schema.Resource{
-		Create: createFunc,
-		Read:   readFunc,
-		Update: updateFunc,
-		Delete: deleteFunc,
+		Create: VmcreateFunc,
+		Read:   VmreadFunc,
+		Update: VmupdateFunc,
+		Delete: VmdeleteFunc,
 		Schema: map[string]*schema.Schema{
 			"name": &schema.Schema{
 				Type:     schema.TypeString,
@@ -83,7 +79,7 @@ func resourceServer() *schema.Resource {
 	}
 }
 
-func createFunc(d *schema.ResourceData, meta interface{}) error {
+func VmcreateFunc(d *schema.ResourceData, meta interface{}) error {
 	client := meta.(*Kcli)
 	vmprofile := pb.Vmprofile{
 		Name:         d.Get("name").(string),
@@ -106,15 +102,15 @@ func createFunc(d *schema.ResourceData, meta interface{}) error {
 	return nil
 }
 
-func readFunc(d *schema.ResourceData, meta interface{}) error {
+func VmreadFunc(d *schema.ResourceData, meta interface{}) error {
 	return nil
 }
 
-func updateFunc(d *schema.ResourceData, meta interface{}) error {
+func VmupdateFunc(d *schema.ResourceData, meta interface{}) error {
 	return nil
 }
 
-func deleteFunc(d *schema.ResourceData, meta interface{}) error {
+func VmdeleteFunc(d *schema.ResourceData, meta interface{}) error {
 	client := meta.(*Kcli)
 	vm := pb.Vm{
 		Name: d.Get("name").(string),
@@ -126,13 +122,4 @@ func deleteFunc(d *schema.ResourceData, meta interface{}) error {
 	}
 	d.SetId("")
 	return nil
-}
-
-func providerConfigure(schema *schema.ResourceData) (interface{}, error) {
-	url := schema.Get("url").(string)
-	if url == "" {
-		url = "127.0.0.1:50051"
-	}
-	client := Kcli{Url: url}
-	return &client, nil
 }

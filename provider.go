@@ -4,6 +4,10 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 )
 
+type Kcli struct {
+	Url string
+}
+
 func Provider() *schema.Provider {
 	return &schema.Provider{
 		Schema: map[string]*schema.Schema{
@@ -14,8 +18,18 @@ func Provider() *schema.Provider {
 			},
 		},
 		ResourcesMap: map[string]*schema.Resource{
-			"kcli_vm": resourceServer(),
+			"kcli_vm":   resourceVm(),
+			"kcli_pool": resourcePool(),
 		},
 		ConfigureFunc: providerConfigure,
 	}
+}
+
+func providerConfigure(schema *schema.ResourceData) (interface{}, error) {
+	url := schema.Get("url").(string)
+	if url == "" {
+		url = "127.0.0.1:50051"
+	}
+	client := Kcli{Url: url}
+	return &client, nil
 }

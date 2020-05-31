@@ -180,6 +180,8 @@ message pool {
     string pool = 1 ; 
     string path = 2 ; 
     bool full = 3 ; 
+    string type = 4 ; 
+    bool thinpool = 5 ; 
 }
 
 message poolslist {
@@ -195,6 +197,8 @@ message network {
     string mode = 6 ; 
     string plan = 7 ; 
     string ip = 8 ; 
+    bool nat = 9 ; 
+    string overrides = 10 ; 
 }
 
 message networkslist {
@@ -337,7 +341,9 @@ service Kcli {
     rpc delete(vm) returns (result) {}
     rpc get_lastvm(client) returns (vm) {}
     rpc delete_image(image) returns (result) {}
+    rpc create_network(network) returns (result) {}
     rpc delete_network(network) returns (result) {}
+    rpc create_pool(pool) returns (result) {}
     rpc delete_pool(pool) returns (result) {}
 }
 

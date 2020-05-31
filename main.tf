@@ -9,7 +9,12 @@ provider kcli {
 //  overrides = "{'memory': 2048, 'numcpus': 3, 'nets': ['default','default']}"
 //}
 
-resource "kcli_pool" "images2" {
- name = "images2"
- path = "/var/lib/libvirt/images2"
+//resource "kcli_pool" "images2" {
+// name = "images2"
+// path = "/var/lib/libvirt/images2"
+//}
+
+resource "kcli_network" "froutos" {
+ name = "froutos"
+ cidr = "192.168.136.0/24"
 }

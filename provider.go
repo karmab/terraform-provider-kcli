@@ -18,8 +18,9 @@ func Provider() *schema.Provider {
 			},
 		},
 		ResourcesMap: map[string]*schema.Resource{
-			"kcli_vm":   resourceVm(),
-			"kcli_pool": resourcePool(),
+			"kcli_vm":      resourceVm(),
+			"kcli_network": resourceNetwork(),
+			"kcli_pool":    resourcePool(),
 		},
 		ConfigureFunc: providerConfigure,
 	}
